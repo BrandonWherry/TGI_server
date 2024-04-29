@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  text-generation:
+    image: ghcr.io/huggingface/text-generation-inference:latest
+    command:
+      - "--model-id"
+      - "/data/llama-3-8b-instruct-awq"
+      - "--max-total-tokens"
+      - "8192"
+      - "--max-input-length"
+      - "5120"
+      - "--max-batch-prefill-tokens"
+      - "5120"
+      - "--quantize"
+      - "awq"
+    ports:
+      - "8000:80"
+    volumes:
+      - /home/ec2-user/projects/data:/data
+    shm_size: 1g
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+    runtime: nvidia
+    environment:
+      - CUDA_LAUNCH_BLOCKING=1
